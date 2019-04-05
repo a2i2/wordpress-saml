@@ -11,6 +11,8 @@ use OneLogin\Saml2\Settings;
 
 require_once "compatibility.php";
 
+define("ACCEPTED_ROLES", ["DET School Staff"]);
+
 function saml_checker() {
 	if (isset($_GET['saml_acs'])) {
 		if (empty($_POST['SAMLResponse'])) {
@@ -297,7 +299,7 @@ function saml_acs() {
 			exit();
 		}
 		$userdata['user_pass'] = wp_generate_password();
-		$user_id = wp_insert_user($userdata);
+		$user_id = insert_user($userdata, $samlRole);
 	} else {
 		echo __("User provided by the IdP "). ' "'. esc_attr($matcherValue). '" '. __("does not exist in wordpress and auto-provisioning is disabled.");
 		exit();
@@ -310,7 +312,7 @@ function saml_acs() {
 		}
 		exit();
 	} else if ($user_id) {
-		wp_set_current_user($user_id);
+		set_current_user($user_id, $samlRole);
 		
 		$rememberme = false;
 		$remembermeMapping = get_option('onelogin_saml_attr_mapping_rememberme');
@@ -439,6 +441,31 @@ function is_saml_enabled() {
 		$saml_enabled = $saml_enabled == 'on'? true : false;
 	}
 	return $saml_enabled;
+}
+
+function insert_user($userdata, $samlrole) {
+    if (is_accepted_user_role($samlrole)) {
+        return wp_insert_user($userdata);
+    }
+
+    wp_redirect(home_url() . "?authenticated=false");
+    exit();
+}
+
+function set_current_user($userid, $samlrole) {
+    if (is_accepted_user_role($samlrole)) {
+        wp_set_current_user($userid);
+    }
+}
+
+function is_accepted_user_role($samlrole) {
+    foreach (ACCEPTED_ROLES as $role) {
+        if ($samlrole == $role) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // Prevent that the user change important fields

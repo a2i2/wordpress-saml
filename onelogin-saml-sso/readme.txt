@@ -22,6 +22,9 @@ To mitigate that bug, place the script at the root of wordpress and execute it (
 
 == Changelog ==
 
+= 3.1.0 =
+* Add SAML role filtering
+
 = 3.0.0 =
 * Update php-saml to 3.1.0 to make the plugin compatible with PHP7.3
 * Overriding user_register will prevent admins to register users, so deactivating that override

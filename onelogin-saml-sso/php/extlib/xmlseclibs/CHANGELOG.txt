@@ -1,5 +1,9 @@
 xmlseclibs.php
 |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+8, April 2019, 3.1.0
+Features:
+- Add SAML role filtering (r-hyndman)
+
 15, Nov 2018, 3.0.3
 Bug Fixes:
 - Fix casing of class name. (Willem Stuursma-Ruwen)

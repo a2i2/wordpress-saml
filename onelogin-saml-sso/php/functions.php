@@ -299,7 +299,7 @@ function saml_acs() {
 			exit();
 		}
 		$userdata['user_pass'] = wp_generate_password();
-		$user_id = insert_user($userdata, $samlRole);
+		$user_id = a2i2_insert_user($userdata, $samlRole);
 	} else {
 		echo __("User provided by the IdP "). ' "'. esc_attr($matcherValue). '" '. __("does not exist in wordpress and auto-provisioning is disabled.");
 		exit();
@@ -312,7 +312,7 @@ function saml_acs() {
 		}
 		exit();
 	} else if ($user_id) {
-		set_current_user($user_id, $samlRole);
+		a2i2_set_current_user($user_id, $samlRole);
 		
 		$rememberme = false;
 		$remembermeMapping = get_option('onelogin_saml_attr_mapping_rememberme');
@@ -443,8 +443,8 @@ function is_saml_enabled() {
 	return $saml_enabled;
 }
 
-function insert_user($userdata, $samlrole) {
-    if (is_accepted_user_role($samlrole)) {
+function a2i2_insert_user($userdata, $samlrole) {
+    if (a2i2_is_accepted_user_role($samlrole)) {
         return wp_insert_user($userdata);
     }
 
@@ -452,13 +452,13 @@ function insert_user($userdata, $samlrole) {
     exit();
 }
 
-function set_current_user($userid, $samlrole) {
-    if (is_accepted_user_role($samlrole)) {
+function a2i2_set_current_user($userid, $samlrole) {
+    if (a2i2_is_accepted_user_role($samlrole)) {
         wp_set_current_user($userid);
     }
 }
 
-function is_accepted_user_role($samlrole) {
+function a2i2_is_accepted_user_role($samlrole) {
     foreach (ACCEPTED_ROLES as $role) {
         if ($samlrole == $role) {
             return true;

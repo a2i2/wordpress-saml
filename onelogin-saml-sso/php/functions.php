@@ -455,7 +455,11 @@ function a2i2_insert_user($userdata, $samlrole) {
 function a2i2_set_current_user($userid, $samlrole) {
     if (a2i2_is_accepted_user_role($samlrole)) {
         wp_set_current_user($userid);
+        return;
     }
+
+    wp_redirect(home_url() . "?authenticated=false");
+    exit();
 }
 
 function a2i2_is_accepted_user_role($samlrole) {

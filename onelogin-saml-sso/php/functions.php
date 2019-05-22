@@ -389,6 +389,12 @@ function saml_metadata() {
 	require_once plugin_dir_path(__FILE__).'_toolkit_loader.php';
 	require plugin_dir_path(__FILE__).'settings.php';
 
+    $idp = $_GET['idp'];
+
+    if ($idp == 'ps' || $idp == 'ec') {
+        require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
+    }
+
 	$samlSettings = new Settings($settings, true);
 	$metadata = $samlSettings->getSPMetadata();
 
@@ -402,6 +408,13 @@ function saml_validate_config() {
 	saml_load_translations();
 	require_once plugin_dir_path(__FILE__).'_toolkit_loader.php';
 	require plugin_dir_path(__FILE__).'settings.php';
+
+    $idp = $_GET['idp'];
+
+    if ($idp == 'ps' || $idp == 'ec') {
+        require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
+    }
+
 	require_once plugin_dir_path(__FILE__)."validate.php";
 	exit();
 }
@@ -409,6 +422,12 @@ function saml_validate_config() {
 function initialize_saml() {
 	require_once plugin_dir_path(__FILE__).'_toolkit_loader.php';
 	require plugin_dir_path(__FILE__).'settings.php';
+
+    $idp = $_GET['idp'];
+
+	if ($idp == 'ps' || $idp == 'ec') {
+	    require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
+    }
 
 	if (!is_saml_enabled()) {
 		return false;

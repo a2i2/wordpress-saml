@@ -5,6 +5,24 @@ Uses the new Onelogin PHP-SAML Toolkit. Review its [dependences](https://github.
 In order to install it, move the onelogin-saml-sso inside the wp-content/plugins folder.
 Once moved, activate the plugin and configure it.
 
+### Using the SAML Plugin with multiple identity providers
+
+To use multiple identity providers, first specify the IdP values you wish to check for at line 15 of the `functions.php` file. For example:
+
+```define("IDENTITY_PROVIDERS", ["idp1", "idp2"]);```
+
+Then for each IdP value you have set, create a file named `settings_<IdP value>.php` by duplicating `settings_template.php` and renaming the file. Eg: `settings_idp1.php`
+
+In your newly created `settings_<IdP value>.php` file, copy and paste the following into the variables at the top of the file:
+-   Service provider entity ID,
+-   IdP x509 certificate,
+-   Service provider x509 certificate, and
+-   Private key.
+
+Finally, in your app when you link to your SAML login service, pass your IdP value in as an argument. For example:
+
+```<a href="' . network_site_url() . '/wp-login.php?saml_sso&idp=idp1&returnTo=' . home_url(add_query_arg(array(), $wp->request)) . '">Login</a>```
+
 ### Using the SAML Plugin in WPengine or similar ###
 
 This kind of WP hosting used to cache plugins and protect the wp-login.php view.

@@ -11,7 +11,8 @@ use OneLogin\Saml2\Settings;
 
 require_once "compatibility.php";
 
-define("ACCEPTED_ROLES", ["DET School Staff"]);
+define("ACCEPTED_ROLES", []);
+define("IDENTITY_PROVIDERS", []);
 
 function saml_checker() {
 	if (isset($_GET['saml_acs'])) {
@@ -391,7 +392,7 @@ function saml_metadata() {
 
     $idp = $_GET['idp'];
 
-    if ($idp == 'ps' || $idp == 'ec') {
+    if (a2i2_is_identity_provider($idp)) {
         require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
     }
 
@@ -411,7 +412,7 @@ function saml_validate_config() {
 
     $idp = $_GET['idp'];
 
-    if ($idp == 'ps' || $idp == 'ec') {
+    if (a2i2_is_identity_provider($idp)) {
         require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
     }
 
@@ -425,7 +426,7 @@ function initialize_saml() {
 
     $idp = $_GET['idp'];
 
-	if ($idp == 'ps' || $idp == 'ec') {
+	if (a2i2_is_identity_provider($idp)) {
 	    require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
     }
 
@@ -484,6 +485,16 @@ function a2i2_set_current_user($userid, $samlrole) {
 function a2i2_is_accepted_user_role($samlrole) {
     foreach (ACCEPTED_ROLES as $role) {
         if ($samlrole == $role) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function a2i2_is_identity_provider($idp) {
+    foreach (IDENTITY_PROVIDERS as $i) {
+        if ($idp == $i) {
             return true;
         }
     }

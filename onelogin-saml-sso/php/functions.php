@@ -172,6 +172,8 @@ function saml_acs() {
 
 	$attrs = $auth->getAttributes();
 
+	$username = $auth->getNameId();
+
 	if (empty($attrs)) {
 		$nameid = $auth->getNameId();
 		if (empty($nameid)) {

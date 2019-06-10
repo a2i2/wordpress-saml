@@ -13,11 +13,11 @@ To use multiple identity providers, first specify the IdP values you wish to che
 
 Then for each IdP value you have set, create a file named `settings_<IdP value>.php` by duplicating `settings_template.php` and renaming the file. Eg: `settings_idp1.php`
 
-In your newly created `settings_<IdP value>.php` file, copy and paste the following into the variables at the top of the file:
--   Service provider entity ID,
--   IdP x509 certificate,
--   Service provider x509 certificate, and
--   Private key.
+In your newly created `settings_<IdP value>.php` file, each SAML configuration variable can be explicitly set. The provided settings file template defaults to taking the values provided through the administrator interface (besides those listed below), however it is recommended that you define all configuration options within each setting file to avoid implicitly loading configuration options that were unintentionally defined within the administrator interface. The following are the settings that should be provided, and can be edited at the top of the file:
+-   `$sp_entity_id` - Service provider entity ID,
+-   `$idp_x509_cert` - IdP x509 certificate,
+-   `$sp_x509_cert` - Service provider x509 certificate, and
+-   `$sp_private_key` - Private key.
 
 Finally, in your app when you link to your SAML login service, pass your IdP value in as an argument. For example:
 

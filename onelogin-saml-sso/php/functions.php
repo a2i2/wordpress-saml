@@ -11,7 +11,8 @@ use OneLogin\Saml2\Settings;
 
 require_once "compatibility.php";
 
-define("ACCEPTED_ROLES", ["DET School Staff"]);
+define("ACCEPTED_ROLES", []);
+define("IDENTITY_PROVIDERS", []);
 
 function saml_checker() {
 	if (isset($_GET['saml_acs'])) {
@@ -170,6 +171,8 @@ function saml_acs() {
 	setcookie(SAML_NAMEID_FORMAT_COOKIE, $auth->getNameIdFormat(), time() + YEAR_IN_SECONDS, SITECOOKIEPATH );
 
 	$attrs = $auth->getAttributes();
+
+	$username = $auth->getNameId();
 
 	if (empty($attrs)) {
 		$nameid = $auth->getNameId();
@@ -389,6 +392,12 @@ function saml_metadata() {
 	require_once plugin_dir_path(__FILE__).'_toolkit_loader.php';
 	require plugin_dir_path(__FILE__).'settings.php';
 
+    $idp = $_GET['idp'];
+
+    if (a2i2_is_identity_provider($idp)) {
+        require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
+    }
+
 	$samlSettings = new Settings($settings, true);
 	$metadata = $samlSettings->getSPMetadata();
 
@@ -402,6 +411,13 @@ function saml_validate_config() {
 	saml_load_translations();
 	require_once plugin_dir_path(__FILE__).'_toolkit_loader.php';
 	require plugin_dir_path(__FILE__).'settings.php';
+
+    $idp = $_GET['idp'];
+
+    if (a2i2_is_identity_provider($idp)) {
+        require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
+    }
+
 	require_once plugin_dir_path(__FILE__)."validate.php";
 	exit();
 }
@@ -409,6 +425,12 @@ function saml_validate_config() {
 function initialize_saml() {
 	require_once plugin_dir_path(__FILE__).'_toolkit_loader.php';
 	require plugin_dir_path(__FILE__).'settings.php';
+
+    $idp = $_GET['idp'];
+
+	if (a2i2_is_identity_provider($idp)) {
+	    require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
+    }
 
 	if (!is_saml_enabled()) {
 		return false;
@@ -465,6 +487,16 @@ function a2i2_set_current_user($userid, $samlrole) {
 function a2i2_is_accepted_user_role($samlrole) {
     foreach (ACCEPTED_ROLES as $role) {
         if ($samlrole == $role) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function a2i2_is_identity_provider($idp) {
+    foreach (IDENTITY_PROVIDERS as $i) {
+        if ($idp == $i) {
             return true;
         }
     }

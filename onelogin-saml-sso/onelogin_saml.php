@@ -4,7 +4,7 @@ Plugin Name: OneLogin SAML SSO - A2I2 edit
 Plugin URI: https://github.com/dstil/wordpress-saml
 Description: Give users secure one-click access to WordPress from OneLogin. This SAML integration eliminates passwords and allows you to authenticate users against your existing Active Directory or LDAP server as well increase security using YubiKeys or VeriSign VIP Access, browser PKI certificates and OneLogin's flexible security policies. OneLogin is pre-integrated with thousands of apps and handles all of your SSO needs in the cloud and behind the firewall.
 Author: OneLogin, Inc. (A2I2)
-Version: 3.1.0
+Version: 3.2.0
 Author URI: https://a2i2.ai
 */
 

@@ -9,9 +9,12 @@ if ( !function_exists( 'add_action' ) ) {
 use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Settings;
 
+require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/wp-load.php';
 require_once "compatibility.php";
 
 define("ACCEPTED_ROLES", ["DET School Staff"]);
+define("ROLE_GROUP_OPTIONS_NAME", "det_role_groups");
+define("ROLE_GROUP_META_KEY", "det_role_group");
 
 function saml_checker() {
 	if (isset($_GET['saml_acs'])) {
@@ -313,6 +316,7 @@ function saml_acs() {
 		exit();
 	} else if ($user_id) {
 		a2i2_set_current_user($user_id, $samlRole);
+        a2i2_set_role($samlRole, ROLE_GROUP_OPTIONS_NAME, $user_id, ROLE_GROUP_META_KEY) ;
 		
 		$rememberme = false;
 		$remembermeMapping = get_option('onelogin_saml_attr_mapping_rememberme');
@@ -470,6 +474,17 @@ function a2i2_is_accepted_user_role($samlrole) {
     }
 
     return false;
+}
+
+function a2i2_set_role($samlrole, $option_name, $user_id, $meta_key) {
+    $roles = get_options($option_name);
+
+    if ($roles == false) {
+        $roles = array($samlrole);
+        update_option($option_name, implode(',', $roles));
+    }
+
+    update_user_meta($user_id, $meta_key, $samlrole);
 }
 
 // Prevent that the user change important fields

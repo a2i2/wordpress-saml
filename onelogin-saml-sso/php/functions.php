@@ -9,7 +9,7 @@ if ( !function_exists( 'add_action' ) ) {
 use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Settings;
 
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/wp-load.php';
+require_once ABSPATH . 'wp-load.php';
 require_once "compatibility.php";
 
 define("ACCEPTED_ROLES", ["DET School Staff"]);
@@ -477,13 +477,15 @@ function a2i2_is_accepted_user_role($samlrole) {
 }
 
 function a2i2_set_role($samlrole, $option_name, $user_id, $meta_key) {
-    $roles = get_options($option_name);
+    $roles = get_option($option_name);
 
     if ($roles == false) {
-        $roles = array($samlrole);
-        update_option($option_name, implode(',', $roles));
+        $roles = $samlrole;
+    } else {
+        $roles .= ',' . $samlrole;
     }
 
+    update_option($option_name, $roles);
     update_user_meta($user_id, $meta_key, $samlrole);
 }
 

@@ -13,6 +13,7 @@ require_once ABSPATH . 'wp-load.php';
 require_once "compatibility.php";
 
 define("ACCEPTED_ROLES", ["DET School Staff"]);
+define("IDENTITY_PROVIDERS", []);
 define("ROLE_GROUP_OPTIONS_NAME", "det_role_groups");
 define("ROLE_GROUP_META_KEY", "det_role_group");
 
@@ -173,6 +174,8 @@ function saml_acs() {
 	setcookie(SAML_NAMEID_FORMAT_COOKIE, $auth->getNameIdFormat(), time() + YEAR_IN_SECONDS, SITECOOKIEPATH );
 
 	$attrs = $auth->getAttributes();
+
+	$username = $auth->getNameId();
 
 	if (empty($attrs)) {
 		$nameid = $auth->getNameId();
@@ -393,6 +396,12 @@ function saml_metadata() {
 	require_once plugin_dir_path(__FILE__).'_toolkit_loader.php';
 	require plugin_dir_path(__FILE__).'settings.php';
 
+    $idp = $_GET['idp'];
+
+    if (a2i2_is_identity_provider($idp)) {
+        require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
+    }
+
 	$samlSettings = new Settings($settings, true);
 	$metadata = $samlSettings->getSPMetadata();
 
@@ -406,6 +415,13 @@ function saml_validate_config() {
 	saml_load_translations();
 	require_once plugin_dir_path(__FILE__).'_toolkit_loader.php';
 	require plugin_dir_path(__FILE__).'settings.php';
+
+    $idp = $_GET['idp'];
+
+    if (a2i2_is_identity_provider($idp)) {
+        require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
+    }
+
 	require_once plugin_dir_path(__FILE__)."validate.php";
 	exit();
 }
@@ -413,6 +429,12 @@ function saml_validate_config() {
 function initialize_saml() {
 	require_once plugin_dir_path(__FILE__).'_toolkit_loader.php';
 	require plugin_dir_path(__FILE__).'settings.php';
+
+    $idp = $_GET['idp'];
+
+	if (a2i2_is_identity_provider($idp)) {
+	    require plugin_dir_path(__FILE__).'settings_'.$idp.'.php';
+    }
 
 	if (!is_saml_enabled()) {
 		return false;
@@ -487,6 +509,16 @@ function a2i2_set_role($samlrole, $option_name, $user_id, $meta_key) {
 
     update_option($option_name, $roles);
     update_user_meta($user_id, $meta_key, $samlrole);
+}
+
+function a2i2_is_identity_provider($idp) {
+    foreach (IDENTITY_PROVIDERS as $i) {
+        if ($idp == $i) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // Prevent that the user change important fields

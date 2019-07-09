@@ -21,7 +21,24 @@ In your newly created `settings_<IdP value>.php` file, each SAML configuration v
 
 Finally, in your app when you link to your SAML login service, pass your IdP value in as an argument. For example:
 
-```<a href="' . network_site_url() . '/wp-login.php?saml_sso&idp=idp1&returnTo=' . home_url(add_query_arg(array(), $wp->request)) . '">Login</a>```
+```
+<a href="' . network_site_url() . '/wp-login.php?saml_sso&idp=idp1&returnTo=' . home_url(add_query_arg(array(), $wp->request)) . '">Login</a>
+```
+
+### Using the SAML Plugin with accepted user roles
+
+You may restrict user authentication to only accepted user roles by specifying the accepted roles at line 16 of the `functions.php` file. For example:
+
+```
+define("ACCEPTED ROLES, ["administrator", "author", "editor"]);
+```
+
+You may then store use these roles within your WordPress application as options by specifying options keys at line 17 and 18 of the `functions.php` file. For Example:
+
+```
+define("ROLE_GROUP_OPTIONS_NAME", "custom_authenticated_user_roles");
+define("ROLE_GROUP_META_KEY", "custom_authenticated_user_role");
+```
 
 ### Using the SAML Plugin in WPengine or similar ###
 

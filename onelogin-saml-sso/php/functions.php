@@ -12,10 +12,10 @@ use OneLogin\Saml2\Settings;
 require_once ABSPATH . 'wp-load.php';
 require_once "compatibility.php";
 
-define("ACCEPTED_ROLES", ["DET School Staff"]);
-define("IDENTITY_PROVIDERS", []);
-define("ROLE_GROUP_OPTIONS_NAME", "det_role_groups");
-define("ROLE_GROUP_META_KEY", "det_role_group");
+define("IDENTITY_PROVIDERS", ["your_idp", "your_idp"]);
+define("ACCEPTED_ROLES", ["your accepted role", "your accepted role"]);
+define("ROLE_GROUP_OPTIONS_NAME", "your_role_groups");
+define("ROLE_GROUP_META_KEY", "your_role_group");
 
 function saml_checker() {
 	if (isset($_GET['saml_acs'])) {

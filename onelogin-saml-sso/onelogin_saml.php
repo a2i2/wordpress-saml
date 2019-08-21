@@ -87,7 +87,7 @@ if (isset($_GET['saml_sso'])) {
 	} else if ($local_wp_actions) {
 		$prevent_local_login = get_option('onelogin_saml_customize_action_prevent_local_login', false);
 
-		if (($want_to_local_login && $prevent_local_login) || ($want_to_reset && $prevent_reset_password)) {		
+		if (($want_to_local_login && $prevent_local_login) || ($want_to_reset && $prevent_reset_password)) {
 			$execute_sso = True;
 		}
 	}
@@ -97,7 +97,7 @@ if (isset($_GET['saml_sso'])) {
 	if ($execute_sso && !$keep_local_login_form) {
 		add_action('init', 'saml_sso', 1);
 	} else {
-		add_filter('login_message', 'saml_custom_login_footer');
+//		add_filter('login_message', 'saml_custom_login_footer');
 	}
 }
 

@@ -9,10 +9,13 @@ if ( !function_exists( 'add_action' ) ) {
 use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Settings;
 
+require_once ABSPATH . 'wp-load.php';
 require_once "compatibility.php";
 
-define("ACCEPTED_ROLES", []);
-define("IDENTITY_PROVIDERS", []);
+define("IDENTITY_PROVIDERS", ["your_idp", "your_idp"]);
+define("ACCEPTED_ROLES", ["your accepted role", "your accepted role"]);
+define("ROLE_GROUP_OPTIONS_NAME", "your_role_groups");
+define("ROLE_GROUP_META_KEY", "your_role_group");
 
 function saml_checker() {
 	if (isset($_GET['saml_acs'])) {
@@ -315,16 +318,17 @@ function saml_acs() {
 		}
 		exit();
 	} else if ($user_id) {
-		a2i2_set_current_user($user_id, $samlRole);
-		
-		$rememberme = false;
-		$remembermeMapping = get_option('onelogin_saml_attr_mapping_rememberme');
-		if (!empty($remembermeMapping) && isset($attrs[$remembermeMapping]) && !empty($attrs[$remembermeMapping][0])) {
-    			$rememberme = in_array($attrs[$remembermeMapping][0], array(1, true, '1', 'yes', 'on')) ? true : false;
-		}
-		wp_set_auth_cookie($user_id, $rememberme);
+        a2i2_set_current_user($user_id, $samlRole);
+        a2i2_set_role($samlRole, ROLE_GROUP_OPTIONS_NAME, $user_id, ROLE_GROUP_META_KEY) ;
 
-		setcookie(SAML_LOGIN_COOKIE, 1, time() + YEAR_IN_SECONDS, SITECOOKIEPATH );
+        $rememberme = false;
+        $remembermeMapping = get_option('onelogin_saml_attr_mapping_rememberme');
+        if (!empty($remembermeMapping) && isset($attrs[$remembermeMapping]) && !empty($attrs[$remembermeMapping][0])) {
+            $rememberme = in_array($attrs[$remembermeMapping][0], array(1, true, '1', 'yes', 'on')) ? true : false;
+        }
+        wp_set_auth_cookie($user_id, $rememberme);
+
+        setcookie(SAML_LOGIN_COOKIE, 1, time() + YEAR_IN_SECONDS, SITECOOKIEPATH );
 	}
 
 	do_action( 'onelogin_saml_attrs', $attrs, wp_get_current_user(), get_current_user_id() );
@@ -492,6 +496,19 @@ function a2i2_is_accepted_user_role($samlrole) {
     }
 
     return false;
+}
+
+function a2i2_set_role($samlrole, $option_name, $user_id, $meta_key) {
+    $roles = get_option($option_name);
+
+    if ($roles == false) {
+        $roles = $samlrole;
+    } else {
+        $roles .= ',' . $samlrole;
+    }
+
+    update_option($option_name, $roles);
+    update_user_meta($user_id, $meta_key, $samlrole);
 }
 
 function a2i2_is_identity_provider($idp) {
